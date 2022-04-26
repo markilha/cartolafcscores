@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -137,67 +137,18 @@ export default function Altetas() {
       })
     );
   }
-
-  function handleNome() {
+  function handleSort(coluna) {
     setOrder(!order);
     if (order) {
       setFilter(
         [...filter].sort((a, b) =>
-          a.apelido< b.apelido ? -1 : 1
+          a[coluna] < b[coluna] ? -1 : 1
         )
       );
     } else {
       setFilter(
         [...filter].sort((a, b) =>
-          a.apelido > b.apelido ? -1 : 1
-        )
-      );
-    }
-  }
-  function handlePreco() {
-    setOrder(!order);
-    if (order) {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.preco_num< b.preco_num ? -1 : 1
-        )
-      );
-    } else {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.preco_num > b.preco_num ? -1 : 1
-        )
-      );
-    }
-  }
-  function handleValorizacao() {
-    setOrder(!order);
-    if (order) {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.minimo_para_valorizar < b.minimo_para_valorizar ? -1 : 1
-        )
-      );
-    } else {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.minimo_para_valorizar > b.minimo_para_valorizar ? -1 : 1
-        )
-      );
-    }
-  }
-  function handleMedia() {
-    setOrder(!order);
-    if (order) {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.media_num < b.media_num ? -1 : 1
-        )
-      );
-    } else {
-      setFilter(
-        [...filter].sort((a, b) =>
-          a.media_num > b.media_num ? -1 : 1
+        a[coluna] > b[coluna] ? -1 : 1
         )
       );
     }
@@ -209,8 +160,7 @@ export default function Altetas() {
         <Grid item md={12} sm={12} lg={4} xs={4}>
           <FormControl fullWidth className={classes.margin}>
             <TextField
-              id="standard-multiline-flexible"
-              size="normal"
+              id="standard-multiline-flexible"             
               label="Atleta"
               placeholder="Nome"
               multiline
@@ -264,24 +214,24 @@ export default function Altetas() {
               <StyledTableCell align="center">Clube</StyledTableCell>
               <StyledTableCell align="center">Foto</StyledTableCell>
               <StyledTableCell align="center">
-                <Link className={classes.link} onClick={handleNome}>
+                <Link className={classes.link} onClick={()=> handleSort('apelido')}>
                   Nome
                 </Link>
               </StyledTableCell>
           
               <StyledTableCell align="center">Estatus</StyledTableCell>
               <StyledTableCell align="right">
-              <Link className={classes.link} onClick={handlePreco}>
+              <Link className={classes.link} onClick={()=> handleSort('preco_num')}>
                   Preço
                 </Link>
               </StyledTableCell>
               <StyledTableCell align="right">
-              <Link className={classes.link} onClick={handleMedia}>
+              <Link className={classes.link} onClick={()=> handleSort('media_num')}>
                   Média
                 </Link>
               </StyledTableCell>
               <StyledTableCell align="right">
-                <Link className={classes.link} onClick={handleValorizacao}>
+                <Link className={classes.link} onClick={()=> handleSort('minimo_para_valorizar')}>
                   Valorização
                 </Link>
               </StyledTableCell>
