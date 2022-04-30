@@ -1,39 +1,72 @@
 {
-    "escalacaos":[
-        {
-            "id": "1",
-            "rod":"1",
-            "canal":"Esc_Cart",
-            "gol": "aaa",
-            "lat1": "Willian",
-            "lat2": "Marcos Rocha",
-            "zag1":"Diogo Costa",
-            "zag2":"Arboleda",
-            "meia1": "Rafael Veiga",
-            "meia2": "Alisson",
-            "meia3": "Scarpa",
-            "ata1": "Calleri",
-            "ata2": "Hulk",
-            "ata3": "Pedro",
-            "tec": "Rogério Ceni"
-        },
-        {
-            "id": "2",
-            "rod":"1",
-            "canal":"Guru",
-            "gol": "Jorge Miguel",
-            "lat1": "Willian",
-            "lat2": "Reinaildo",
-            "zag1":"Gustavo",
-            "zag2":"Mario",
-            "meia1": "Rafael Veiga",
-            "meia2": "Jorge",
-            "meia3": "Augusto",
-            "ata1": "Calleri",
-            "ata2": "Azevedo",
-            "ata3": "Roni",
-            "tec": "Lucas"
-        }
-
-    ]    
+  "escalacaos": [
+    {
+      "id": "1",
+      "rod": "1",
+      "canal": "Esc_Cart",
+      "gol": "aaa",
+      "lat1": "Willian",
+      "lat2": "Marcos Rocha",
+      "zag1": "Diogo Costa",
+      "zag2": "Arboleda",
+      "meia1": "Rafael Veiga",
+      "meia2": "Alisson",
+      "meia3": "Scarpa",
+      "ata1": "Calleri",
+      "ata2": "Hulk",
+      "ata3": "Pedro",
+      "tec": "Rogério Ceni"
+    },
+    {
+      "id": "2",
+      "rod": "1",
+      "canal": "Guru",
+      "gol": "Jorge Miguel",
+      "lat1": "Willian",
+      "lat2": "Reinaildo",
+      "zag1": "Gustavo",
+      "zag2": "Mario",
+      "meia1": "Rafael Veiga",
+      "meia2": "Jorge",
+      "meia3": "Augusto",
+      "ata1": "Calleri",
+      "ata2": "Azevedo",
+      "ata3": "Roni",
+      "tec": "Lucas"
+    },
+    {
+      "rod": "",
+      "canal": "CAMILO",
+      "gol": "Cássio",
+      "lat1": "Bruno Melo",
+      "lat2": "Bruno Pacheco",
+      "zag1": "Cleiton",
+      "zag2": "Cleiton",
+      "meia1": "Andrés",
+      "meia2": "Arias",
+      "meia3": "Andrey",
+      "ata1": "Allanzinho",
+      "ata2": "Aloísio",
+      "ata3": "André",
+      "tec": "Antonio Mohamed",
+      "id": "Sy1LTJl"
+    },
+    {
+      "rod": "3",
+      "canal": "Betin",
+      "gol": "Arthur",
+      "lat1": "Isla",
+      "lat2": "Douglas Silva",
+      "zag1": "Felipe Melo",
+      "zag2": "Gustavo Marques",
+      "meia1": "Everton",
+      "meia2": "Atuesta ",
+      "meia3": "André",
+      "ata1": "Breno Lopes",
+      "ata2": "Breno Lopes",
+      "ata3": "Bruninho",
+      "tec": "Fabián Bustos",
+      "id": "e97UojZ"
+    }
+  ]
 }

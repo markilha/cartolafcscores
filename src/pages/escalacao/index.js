@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Paper,
@@ -11,17 +11,21 @@ import {
   FormControl,
   Select,
   InputLabel,
-  MenuItem
+  MenuItem,
+
 } from "@material-ui/core";
 
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import {Link, NavLink} from 'react-router-dom';
+import './styles.css'
+import Edit from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexWrap: "wrap",
-    width: "90%",
+    width: "100%",
   },
   margin: {
     margin: theme.spacing(1),
@@ -76,29 +80,28 @@ const StyledTableRow = withStyles((theme) => ({
 
 export default function Escalcao() {
   const classes = useStyles();
-  const[rodada,setRodada] = useState(1);
-  const[escalacoes, setEscalacoes] = useState([]);
+  const [rodada, setRodada] = useState(1);
+  const [escalacoes, setEscalacoes] = useState([]);
 
   useEffect(() => {
     async function loadEscalacoes() {
-      const response = await axios.get("http://localhost:5000/escalacaos")
-      .then((response)=>{
-        setEscalacoes(response.data); 
-      })
+      const response = await axios
+        .get("http://localhost:5000/escalacaos")
+        .then((response) => {
+          setEscalacoes(response.data);
+        });
     }
     loadEscalacoes();
   }, []);
 
-  function handleRodada(e)
-{
-    setRodada(e.target.value);
-    alert(e.target.value);
-}
+  function handleRodada(e) {
+    setRodada(e.target.value);    
+  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item md={12} sm={12} lg={12} xs={12}>
-        <FormControl className={classes.margin}>
+        <Grid item md={12} sm={12} lg={6} xs={6}>
+          <FormControl className={classes.margin}>
             <InputLabel id="demo-simple-select-label">Rodada</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -114,7 +117,10 @@ export default function Escalcao() {
               <MenuItem value={6}>6</MenuItem>
             </Select>
           </FormControl>
-
+          <Link className="link" to={`/escalacao/new/${rodada}`}>Novo</Link>
+        </Grid>
+        <Grid item md={12} sm={12} lg={6} xs={6}>
+          
         </Grid>
         <Grid item md={12} sm={12} lg={12} xs={12}>
           <TableContainer component={Paper}>
@@ -135,32 +141,80 @@ export default function Escalcao() {
                   <StyledTableCell align="center">ATA</StyledTableCell>
                   <StyledTableCell align="center">ATA</StyledTableCell>
                   <StyledTableCell align="center">TEC</StyledTableCell>
+                  <StyledTableCell align="center"></StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-            {escalacoes.map((row) => {
-             
-              return (
-                <StyledTableRow key={row.id}>                
-                  <StyledTableCell align="center"> {row.rod} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.canal} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.gol} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.lat1} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.lat2} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.zag1} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.zag2} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.meia1} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.meia2} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.meia3} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.ata1} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.ata2} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.ata3} </StyledTableCell>
-                  <StyledTableCell align="center"> {row.tec} </StyledTableCell>
-               
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
+                {escalacoes.map((row) => {
+                  return (
+                    <StyledTableRow key={row.id}>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.rod}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.canal}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.gol}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.lat1}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.lat2}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.zag1}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.zag2}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.meia1}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.meia2}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.meia3}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.ata1}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.ata2}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.ata3}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        {row.tec}{" "}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                      <Link className="link" to={`/escalacao/edit/${row.id}`}>                    
+                       <Edit/> 
+                        </Link>
+                      </StyledTableCell>
+
+                     
+                    </StyledTableRow>
+                  );
+                })}
+              </TableBody>
             </Table>
           </TableContainer>
         </Grid>

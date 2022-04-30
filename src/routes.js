@@ -16,9 +16,11 @@ const Routes = ()=>{
             <Route exact path="/atletas" component={Atletas}/>
             <Route exact path="/escalacao" component={Escalacao}/>
             <Route exact path="/escalacao/edit/:id" component={Edit}/>
+            <Route exact path="/escalacao/new/:rodada" component={Edit}/>
         </Switch>
         </BrowserRouter>
     )
 }
 
 export default Routes;
+
