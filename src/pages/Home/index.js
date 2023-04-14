@@ -1,4 +1,4 @@
-import React,{useEffect,useState}from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Box,
@@ -11,6 +11,8 @@ import {
 
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
+import InputSearch from "../../components/InputSearch";
+import PersonCart from "../../components/cart";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,19 +44,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [jogadores,setJogadores] = useState([])
+  const [atletas, setAtletas] = useState([]);
+  const [filted, setFilted] = useState([]);
 
-  useEffect(()=>{
-
-    async function getJogadores(){
-
-       const result = await api.get(`atletas/mercado`);
-       console.log(result);
-
-
+  useEffect(() => {
+    async function getJogadores() {
+      const result = await api.get(`/api/cartolafc`);
+      setAtletas(result.data.atletas);
+      setFilted(result.data.atletas);
+      console.log(result.data.atletas);
     }
-    getJogadores()
-  })
+    getJogadores();
+  },[]);
   return (
     <Grid container spacing={3} style={{ margin: 5 }}>
       <Grid
@@ -64,16 +65,15 @@ export default function Home() {
       >
         <Paper className={classes.paper}>
           <Box className={classes.pesquisar}>
-            <TextField
-              size="small"
-              label="Buscar"
-              variant="outlined"
-              style={{ width: 400, marginBottom: 5 }}
+            <div style={{width:'90%',margin:5}}>
+            <InputSearch
+              filtered={filted}
+              setFiltered={setFilted}
+              rows={atletas}
+              searchFields={["apelido","minimo_para_valorizar"]}              
             />
-
-            <Button variant="outlined" className={classes.button}>
-              ORDENAR
-            </Button>
+            </div>
+        
           </Box>
           <Box>
             <Button variant="outlined" size="small" className={classes.button}>
@@ -90,16 +90,13 @@ export default function Home() {
             </Button>
           </Box>
         </Paper>
-        <Box style={{ background: "blue", height: 550, width: 547 }}>
+        <Box style={{ height: 550, width: 547 }}>
           <div
             style={{ overflowY: "scroll", maxHeight: "500px", width: "100%" }}
           >
-            <Card className={classes.root} variant="outlined">
-              <CardContent>
-                ola
-              </CardContent>
-            </Card>
-            
+            {filted?.map((item) => (
+            <PersonCart dados={item}/>
+            ))}
           </div>
         </Box>
       </Grid>

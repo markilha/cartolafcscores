@@ -13,7 +13,7 @@ import axios from 'axios';
 // esquemas >> Lista os esquemas táticos (4-3-3) etc...
 
 const api = axios.create({
-    baseURL: 'https://api.cartolafc.globo.com'
+    baseURL: 'http://localhost:5000'
 });
 
 export default api;
