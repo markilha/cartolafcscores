@@ -13,7 +13,7 @@ import axios from 'axios';
 // esquemas >> Lista os esquemas táticos (4-3-3) etc...
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000'
+    baseURL: 'https://apicartolafc.vercel.app'
 });
 
 export default api;
