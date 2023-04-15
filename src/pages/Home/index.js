@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  Grid,
-  Box,
-  Button,
-  TextField,
-  Paper,
-  Card,
-  CardContent,
-} from "@material-ui/core";
+import React, { useState } from "react";
+import { Grid, Box, Button, Paper } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import InputSearch from "../../components/InputSearch";
 import PersonCart from "../../components/cart";
+import { useQuery } from "react-query";
+import SelectPerson from "../../components/control/select";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,18 +38,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [atletas, setAtletas] = useState([]);
   const [filted, setFilted] = useState([]);
+  const [canal,setCanal]= useState('');
 
-  useEffect(() => {
-    async function getJogadores() {
-      const result = await api.get(`/api/cartolafc`);
-      setAtletas(result.data.atletas);
-      setFilted(result.data.atletas);
-      console.log(result.data.atletas);
-    }
-    getJogadores();
-  },[]);
+  const { data, isLoading, error } = useQuery("myAtletas", async () => {
+    const result = await api.get(`/atletas/mercado`);
+    setFilted(result.data.atletas);
+    return result.data;
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const canais = [
+    {label:"Camilo",value:"Camilo"},
+    {label:"Cartomante",value:"Cartomante"},
+    {label:"Helinho",value:"Helinho"}
+  ]
+
   return (
     <Grid container spacing={3} style={{ margin: 5 }}>
       <Grid
@@ -64,17 +69,19 @@ export default function Home() {
         style={{ width: "100%", height: 700, justifyContent: "center" }}
       >
         <Paper className={classes.paper}>
-          <Box className={classes.pesquisar}>
-            <div style={{width:'90%',margin:5}}>
-            <InputSearch
-              filtered={filted}
-              setFiltered={setFilted}
-              rows={atletas}
-              searchFields={["apelido","minimo_para_valorizar"]}              
-            />
+          <div style={{display:'flex',flexDirection:"row"}}>
+            <div style={{ width: "60%", margin: 5 }}>
+              <InputSearch
+                filtered={filted}
+                setFiltered={setFilted}
+                rows={data.atletas}
+                searchFields={["apelido", "minimo_para_valorizar"]}
+              />
             </div>
-        
-          </Box>
+            <div style={{ width: "30%", margin: 5 }}>
+              <SelectPerson options={canais} label={'Canais'} value={canal} setValue={setCanal} />
+            </div>
+          </div>
           <Box>
             <Button variant="outlined" size="small" className={classes.button}>
               POSIÇÃO
@@ -94,9 +101,18 @@ export default function Home() {
           <div
             style={{ overflowY: "scroll", maxHeight: "500px", width: "100%" }}
           >
-            {filted?.map((item) => (
-            <PersonCart dados={item}/>
-            ))}
+            {filted?.map((item) => {
+              const filterClube = Object.values(data.clubes).find(
+                (objeto) => objeto.id === item.clube_id
+              );
+              const status = Object.values(data.status).find(
+                (objeto) => objeto.id === item.status_id
+              );
+              const posicao = Object.values(data.posicoes).find(
+                (objeto) => objeto.id === item.posicao_id
+              );
+              return <PersonCart atleta={item} clube={filterClube} status={status} posicao={posicao} canal={canal} />;
+            })}
           </div>
         </Box>
       </Grid>
