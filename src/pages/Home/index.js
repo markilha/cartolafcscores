@@ -39,9 +39,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
   const classes = useStyles();
   const [filted, setFilted] = useState([]);
-  const [canal,setCanal]= useState('');
-
-  console.log( process.env.REACT_APP_API_KEY)
+  const [canal,setCanal]= useState(''); 
   const { data, isLoading, error } = useQuery("myAtletas", async () => {
     const result = await api.get(`/atletas/mercado`);
     setFilted(result.data.atletas);
