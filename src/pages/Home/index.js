@@ -41,6 +41,7 @@ export default function Home() {
   const [filted, setFilted] = useState([]);
   const [canal,setCanal]= useState('');
 
+  console.log( process.env.REACT_APP_API_KEY)
   const { data, isLoading, error } = useQuery("myAtletas", async () => {
     const result = await api.get(`/atletas/mercado`);
     setFilted(result.data.atletas);
