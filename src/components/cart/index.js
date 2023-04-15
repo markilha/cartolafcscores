@@ -10,6 +10,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import {firebase} from "../../services/firebase";
 import { collection,addDoc, deleteDoc,doc } from "firebase/firestore";
+import { toast } from 'react-toastify';
 
 const Cart = ({ atleta, clube, status, posicao, canal,rodada }) => {
   let caminhoFoto = atleta?.foto?.replace("FORMATO", "220x220");
@@ -37,9 +38,8 @@ const Cart = ({ atleta, clube, status, posicao, canal,rodada }) => {
       clube:clube.abreviacao,
       preco: atleta.preco_num
     }
-   await addDoc(escCollectionRef,at)   
-  
-   alert("Adicionado com sucesso!")
+   await addDoc(escCollectionRef,at) 
+   toast.success('Atleta adicionado com sucesso!!!')
   }
 
   // async function handleEnviar(dado) { 
