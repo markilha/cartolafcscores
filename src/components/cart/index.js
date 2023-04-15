@@ -11,7 +11,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import {firebase} from "../../services/firebase";
 import { collection,addDoc, deleteDoc,doc } from "firebase/firestore";
 
-const Cart = ({ atleta, clube, status, posicao, canal }) => {
+const Cart = ({ atleta, clube, status, posicao, canal,rodada }) => {
   let caminhoFoto = atleta?.foto?.replace("FORMATO", "220x220");
 
   function retornaStatus() {
@@ -30,7 +30,7 @@ const Cart = ({ atleta, clube, status, posicao, canal }) => {
   
   async function handleEnviar() { 
     const at = {
-      rodada: 1,
+      rodada: rodada,
       canal:canal,    
       apelido: atleta.apelido,
       posicao: posicao.abreviacao,
