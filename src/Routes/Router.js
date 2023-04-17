@@ -1,21 +1,25 @@
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import React, { useContext } from 'react';
+import { Route, Redirect } from 'react-router-dom';
+import { AuthContext } from '../contexts/contextAuth';
 
 export default function RouteWrapper({
   component: Component,
   isPrivate,
   ...rest
 }) {
-  const dados = localStorage.getItem("cartUser");
-  const user = JSON.parse(dados);
+  const { signed, loading} = useContext(AuthContext);
 
-  if (!user && isPrivate) {
-    return <Redirect to="/" />;
+  if (loading) {
+    return <div>Carregando....</div>;
+  } else {
+    if (!signed && isPrivate) {
+      return <Redirect to="/" />;
+    }
+    if (signed && !isPrivate) {
+      return <Redirect to="/home" />;
+    }
+    return <Route {...rest} render={(props) => <Component {...props} />} />;
   }
-
-  if (user && !isPrivate) {
-    return <Redirect to="/home" />;
-  }
-
-  return <Route {...rest} render={(props) => <Component {...props} />} />;
 }
+
+

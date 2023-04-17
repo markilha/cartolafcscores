@@ -36,6 +36,7 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada }) => {
       canal: canal,
       apelido: atleta.apelido,
       posicao: posicao.abreviacao,
+      atleta_id: atleta.atleta_id,
       clube: clube.abreviacao,
       preco: atleta.preco_num,
       valorizacao: atleta.minimo_para_valorizar,
@@ -126,28 +127,28 @@ const styles = {
   },
   nome: {
     fontWeight: "bold",
-    fontSize: "16px",
+    fontSize: "14px",
   },
   nome2: {
-    fontSize: "14px",
+    fontSize: "12px",
   },
   nome3: {
-    fontSize: "14px",
+    fontSize: "12px",
     fontWeight: "bold",
   },
   nulo: {
     fontWeight: "bold",
-    fontSize: "16px",
+    fontSize: "14px",
     color: "red",
   },
   provavel: {
     fontWeight: "bold",
-    fontSize: "16px",
+    fontSize: "14px",
     color: "green",
   },
   duvida: {
     fontWeight: "bold",
-    fontSize: "16px",
+    fontSize: "14px",
     color: "yellow",
   },
   fotoContainer: {
@@ -167,7 +168,7 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    margin: 3,
+
   },
   container_nome: {
     display: "flex",

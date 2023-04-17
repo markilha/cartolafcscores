@@ -7,12 +7,13 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell
+  Cell,
 } from "recharts";
 
 export function BarChartCustom({ data }) {
   // Função para gerar uma cor aleatória
-  const getRandomColor = () => "#" + Math.floor(Math.random() * 16777215).toString(16);
+  const getRandomColor = () =>
+    "#" + Math.floor(Math.random() * 16777215).toString(16);
 
   // Cria um array de cores aleatórias
   const colors = data.map(() => getRandomColor());
@@ -21,7 +22,7 @@ export function BarChartCustom({ data }) {
     <ResponsiveContainer width="100%" height="50%">
       <BarChart
         width={800}
-        height={100}
+        height={80}
         data={data}
         margin={{
           top: 5,
@@ -31,15 +32,15 @@ export function BarChartCustom({ data }) {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="apelido" />
         <YAxis />
-        <Tooltip />      
-        <Bar dataKey="value">
+        <Tooltip />
+        <Bar dataKey="escalacoes">
           {
             // Usando a função map para renderizar as barras e atribuir as cores aleatórias usando o componente "Cell"
-            data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={colors[index]} />
-            ))
+            data.map((entry, index) => {                       
+              return <Cell key={`cell-${index}`} fill={colors[index]} />;
+            })
           }
         </Bar>
       </BarChart>
