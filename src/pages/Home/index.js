@@ -8,12 +8,13 @@ import PersonCart from "../../components/cart";
 import { useQuery } from "react-query";
 import SelectPerson from "../../components/control/select";
 
-import { firebase } from "../../services/firebase";
+import firebase  from "../../services/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import CustomizedTables from "../../components/table";
 import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
 import { BarChartCustom } from "../../components/grafico/BarChart";
+import Header from '../../components/Header';
 
 export default function Home() {
   const classes = useStyles();
@@ -26,6 +27,11 @@ export default function Home() {
   const [selecao, setSelecao] = useState([]);
 
   const escCollectionRef = collection(firebase, "Escalacao");
+
+  // const escCollectionRef = firebase
+  // .firestore()
+  // .collection("Escalacao")
+  // .orderBy("canal", "desc");
   //buscando banco de dados
   useEffect(() => {
     async function getFirebase() {
@@ -135,6 +141,7 @@ export default function Home() {
 
   return (
     <Grid container spacing={3} style={{ margin: 5 }}>
+      <Header/>
       <Grid
         container
         xs={6}

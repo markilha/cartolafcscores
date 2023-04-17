@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { firebase } from "../../services/firebase";
+import firebase  from "../../services/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { DadosContext } from "../../contexts/contextDados";

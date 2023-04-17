@@ -7,7 +7,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
-import { firebase } from "../../services/firebase";
+import  firebase  from "../../services/firebase";
+
 import { collection, addDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { DadosContext } from "../../contexts/contextDados";
