@@ -3,6 +3,7 @@ const canais = [
     { label: "Camilo", value: "Camilo" },
     { label: "Blog-Campeão", value: "Blog-Campeão" },
     { label: "Betin", value: "Betin" },
+    {label:  "Escola cartoleiros", value: "Escola cartoleiros" },
   ];
   const rodadas = [
     { label: "1", value: "1" },

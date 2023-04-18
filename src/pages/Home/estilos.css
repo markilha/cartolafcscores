@@ -1,4 +1,117 @@
 .button {
-    width: 100px;
-    margin: 20px;
-  }
+  width: 100px;
+  margin: 20px;
+}
+/* Estilo para o campo de futebol */
+.campo {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  background-image: url(../../../public/img/campinho.PNG);
+  background-size: cover;
+}
+
+/* Estilo para as imagens dos jogadores */
+.imagem {
+  width: 80px;
+  height: 80px; 
+}
+.texto {
+  color:'red'
+}
+.ata1 {
+  position: absolute;
+  left: 100px;
+  top: 20px;
+  width: 150px;
+  height: 80px; 
+}
+ 
+.ata2 {
+  position: absolute;
+  left: 250px;
+  top: 20px;
+  width: 150px;
+  height: 80px;
+}
+.ata3 {
+  position: absolute;
+  left: 390px;
+  top: 20px;
+  width: 150px;
+  height: 80px;
+}
+.mei1 {
+  position: absolute;
+  left: 90px;
+  top: 170px;
+  width: 150px;
+  height: 80px;
+}
+.mei2 {
+  position: absolute;
+  left: 258px;
+  top: 170px;
+  width: 150px;
+  height: 80px;
+}
+.mei3 {
+  position: absolute;
+  left: 410px;
+  top: 170px;
+  width: 150px;
+  height: 80px;
+}
+.dev1 {
+  position: absolute;
+  left: 70px;
+  top: 330px;
+  width: 120px;
+  height: 80px;
+}
+.dev2 {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 180px;
+  top: 330px;
+  width: 120px;
+  height: 80px;
+}
+.dev3 {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 330px;
+  top: 330px;
+  width: 120px;
+  height: 80px;
+}
+.dev4 {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 450px;
+  top: 330px;
+  width: 120px;
+  height: 80px;
+}
+.tec{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 30px;
+  top: 460px;
+  width: 150px;
+  height: 80px;
+}
+.gol{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 260px;
+  top: 460px;
+  width: 150px;
+  height: 80px;
+}
+

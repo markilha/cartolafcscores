@@ -15,6 +15,7 @@ import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
 import { BarChartCustom } from "../../components/grafico/BarChart";
 import Header from "../../components/Header";
+import "./estilos.css";
 
 export default function Home() {
   const classes = useStyles();
@@ -25,6 +26,7 @@ export default function Home() {
   const [firedata, setFiredata] = useState([]);
   const [filterGrafico, setFilterGrafico] = useState([]);
   const [selecao, setSelecao] = useState([]);
+  const [precoTotal,setPrecoTotal] = useState('');
 
   const escCollectionRef = collection(firebase, "Escalacao");
 
@@ -89,10 +91,40 @@ export default function Home() {
         "mei",
         3
       );
+      const Mais_lat = filtrarJogadoresMaisEscaladosPorPosicao(
+        FiltradosPorRodada,
+        "lat",
+        2
+      );
+      const Mais_zag = filtrarJogadoresMaisEscaladosPorPosicao(
+        FiltradosPorRodada,
+        "zag",
+        2
+      );
+      const Mais_gol = filtrarJogadoresMaisEscaladosPorPosicao(
+        FiltradosPorRodada,
+        "gol",
+        2
+      );
+      const Mais_tec = filtrarJogadoresMaisEscaladosPorPosicao(
+        FiltradosPorRodada,
+        "tec",
+        2
+      );
 
-      const mais = [...jogadoresMais,...Mais_meia]    
+      const mais = [
+        ...jogadoresMais,
+        ...Mais_meia,
+        ...Mais_lat,
+        ...Mais_zag,
+        ...Mais_gol,
+        ...Mais_tec,
+      ];
 
       setSelecao(mais);
+      const totalTime = somarvalor(mais)
+      setPrecoTotal(totalTime.toString())
+     
 
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
 
@@ -101,18 +133,24 @@ export default function Home() {
     getFirebase();
   }, [rodada]);
 
+  function somarvalor(array) {
+    let soma = 0;
+    for (let i = 0; i < array.length; i++) {
+      soma += array[i].preco;
+    }
+    return soma;
+  }
+ 
+
   function somarEscalacoes(jogadores) {
     const contagemApelidos = {};
     jogadores.forEach((documento) => {
       const id = documento.atleta_id;
       if (!contagemApelidos[id]) {
         contagemApelidos[id] = 0;
-      }
-      // Incrementa a contagem do apelido correspondente
+      }     
       contagemApelidos[id]++;
     });
-
-    // Cria um array de jogadores com um campo "value" contendo o valor das escalacoes (contagem)
     const jogadoresComValor = jogadores.map((documento) => {
       return {
         ...documento,
@@ -123,14 +161,10 @@ export default function Home() {
   }
 
   function filtrarJogadoresMaisEscaladosPorPosicao(jogadores, posicao, cont) {
-    // Calcular a soma total das escalacoes por jogador
     const escalacoesPorJogador = somarEscalacoes(jogadores);
-    // Filtrar os jogadores com a posição especificada
     const jogadoresFiltradosPoPosicao = escalacoesPorJogador.filter(
       (jogador) => jogador.posicao === posicao
     );
-    // Cria um conjunto (Set) para armazenar os jogadores únicos
-    //Retorna o array de jogadores filtrados sem repetições
     const jogadoresUnicos = new Set();
     const jogadoresFiltradosUnicos = jogadoresFiltradosPoPosicao.filter(
       (jogador) => {
@@ -266,22 +300,138 @@ export default function Home() {
       <div className={classes.container_grid}>
         <div className={classes.container_item}>
           <Typography variant="h6" gutterBottom>
-            SELEÇÃO
+            SELEÇÃO - C$ {precoTotal}
           </Typography>
           <div
             style={{
               width: "90%",
-              overflowY: "auto",
+
               justifyContent: "center",
               height: 550,
               margin: 10,
             }}
           >
-            <CustomizedTables rows={selecao} />
+            <div>
+              {/* <img src="img/campinho.png" alt="Exemplo de Imagem" width={600} height={500}/> */}
+              {selecao.length > 0 && (
+                <div className="campo">
+                  <div className="ata1">
+                    <span className="texto">{selecao[0].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[0].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+                  <div className="ata2">
+                    <span>{selecao[1].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[1].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+                  <div className="ata3">
+                    <span>{selecao[2].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[2].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+                  {/* MEIAS */}
+                  <div className="mei1">
+                    <span>{selecao[3].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[3].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  <div className="mei2">
+                    <span>{selecao[4].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[4].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  <div className="mei3">
+                    <span>{selecao[5].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[5].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  {/* DEVENSOR */}
+
+                  <div className="dev1">
+                    <span>{selecao[6].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[6].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  <div className="dev2">
+                    <span>{selecao[7].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[7].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  <div className="dev3">
+                    <span>{selecao[8].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[8].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+                  <div className="dev4">
+                    <span>{selecao[9].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[9].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  {/* final */}
+
+                  <div className="gol">
+                    <span>{selecao[10].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[10].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  <div className="tec">
+                    <span>{selecao[11].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[11].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+
+                  {/* E assim por diante para os demais jogadores */}
+                </div>
+              )}
+            </div>
+
+            {/* <CustomizedTables rows={selecao} /> */}
           </div>
         </div>
-
-
 
         <div className={classes.container_item}>
           <Typography variant="h6" gutterBottom>
