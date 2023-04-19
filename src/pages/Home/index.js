@@ -480,14 +480,27 @@ export default function Home() {
         </div>
 
         <div className={classes.container_item}>
-          <Typography variant="h6" gutterBottom>
-            GRÁFICO DOS ESCALADOS
-          </Typography>
-          <div style={{ width: "100%", height: 700 }}>
-            <BarChartCustom data={filterGrafico} />
+          <div className={classes.container_item2}>
+            <div
+              style={{
+                overflowY: "auto",
+                maxHeight: "630px",
+                width: "100%",
+              }}
+            >           
+              <CustomizedTables
+                rows={selecao}               
+              />
+            </div>
           </div>
         </div>
+       
+       
       </div>
+      <div className={classes.container_item}>
+           <BarChartCustom data={filterGrafico} />
+        </div>
+    
     </>
   );
 }
