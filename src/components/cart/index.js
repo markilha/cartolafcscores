@@ -13,7 +13,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { DadosContext } from "../../contexts/contextDados";
 
-const Cart = ({ atleta, clube, status, posicao, canal, rodada }) => {
+const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) => {
   const {atual,setAtual} = useContext(DadosContext)
   let caminhoFoto = atleta?.foto?.replace("FORMATO", "220x220");
 
@@ -42,9 +42,10 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada }) => {
       valorizacao: atleta.minimo_para_valorizar,
       foto:caminhoFoto
     };
-    await addDoc(escCollectionRef, at);
-    setAtual(!atual)
-    toast.success("Atleta adicionado com sucesso!!!");
+    setDados([...dados,at])
+    // await addDoc(escCollectionRef, at);
+    // setAtual(!atual)
+    //toast.success("Atleta adicionado com sucesso!!!");
   }
 
  

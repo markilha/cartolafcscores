@@ -9,13 +9,14 @@ import { useQuery } from "react-query";
 import SelectPerson from "../../components/control/select";
 
 import firebase from "../../services/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import CustomizedTables from "../../components/table";
 import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
 import { BarChartCustom } from "../../components/grafico/BarChart";
 import Header from "../../components/Header";
 import "./estilos.css";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const classes = useStyles();
@@ -26,15 +27,21 @@ export default function Home() {
   const [firedata, setFiredata] = useState([]);
   const [filterGrafico, setFilterGrafico] = useState([]);
   const [selecao, setSelecao] = useState([]);
-  const [precoTotal,setPrecoTotal] = useState('');
+  const [precoTotal, setPrecoTotal] = useState("");
 
   const escCollectionRef = collection(firebase, "Escalacao");
 
-  // const escCollectionRef = firebase
-  // .firestore()
-  // .collection("Escalacao")
-  // .orderBy("canal", "desc");
-  //buscando banco de dados
+  //Puscando atletas api
+  const { data, isLoading, error } = useQuery(
+    "myAtletas",
+    async () => {
+      const result = await api.get(`/atletas/mercado`);
+      setFilted(result.data.atletas);
+      return result.data;
+    },
+    { refetchOnWindowFocus: false }
+  );
+
   useEffect(() => {
     async function getFirebase() {
       const getEscalcao = await getDocs(escCollectionRef).catch((error) =>
@@ -104,12 +111,12 @@ export default function Home() {
       const Mais_gol = filtrarJogadoresMaisEscaladosPorPosicao(
         FiltradosPorRodada,
         "gol",
-        2
+        1
       );
       const Mais_tec = filtrarJogadoresMaisEscaladosPorPosicao(
         FiltradosPorRodada,
         "tec",
-        2
+        1
       );
 
       const mais = [
@@ -122,9 +129,8 @@ export default function Home() {
       ];
 
       setSelecao(mais);
-      const totalTime = somarvalor(mais)
-      setPrecoTotal(totalTime.toString())
-     
+      const totalTime = somarvalor(mais);
+      setPrecoTotal(totalTime.toFixed(2).toString());
 
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
 
@@ -140,7 +146,6 @@ export default function Home() {
     }
     return soma;
   }
- 
 
   function somarEscalacoes(jogadores) {
     const contagemApelidos = {};
@@ -148,7 +153,7 @@ export default function Home() {
       const id = documento.atleta_id;
       if (!contagemApelidos[id]) {
         contagemApelidos[id] = 0;
-      }     
+      }
       contagemApelidos[id]++;
     });
     const jogadoresComValor = jogadores.map((documento) => {
@@ -179,13 +184,6 @@ export default function Home() {
     return jogadoresFiltradosUnicos.slice(0, cont);
   }
 
-  //Puscando atletas api
-  const { data, isLoading, error } = useQuery("myAtletas", async () => {
-    const result = await api.get(`/atletas/mercado`);
-    setFilted(result.data.atletas);
-    return result.data;
-  });
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -193,6 +191,25 @@ export default function Home() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+  async function handleEnviar() {
+    try {
+      firedata?.map(async (atleta) => {
+        await addDoc(escCollectionRef, atleta);
+      });
+      toast.success("Atleta adicionado com sucesso!!!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
+  const handleDelete = (row) => {
+    const newData = [...firedata];
+    const rowIndex = newData.findIndex((r) => r === row);
+    if (rowIndex !== -1) {
+      newData.splice(rowIndex, 1);
+      setFiredata(newData);
+    }
+  };
 
   return (
     <>
@@ -273,6 +290,8 @@ export default function Home() {
                     posicao={posicao}
                     canal={canal}
                     rodada={rodada}
+                    setDados={setFiredata}
+                    dados={firedata}
                   />
                 );
               })}
@@ -291,7 +310,18 @@ export default function Home() {
                 width: "100%",
               }}
             >
-              <CustomizedTables rows={firedata} />
+              <Button
+                variant="outlined"
+                size="small"
+                className={classes.button}
+                onClick={() => handleEnviar()}
+              >
+                SALVAR
+              </Button>
+              <CustomizedTables
+                rows={firedata}
+                onDelete={(row) => handleDelete(row)}
+              />
             </div>
           </div>
         </div>
@@ -313,33 +343,46 @@ export default function Home() {
           >
             <div>
               {/* <img src="img/campinho.png" alt="Exemplo de Imagem" width={600} height={500}/> */}
-              {selecao.length > 0 && (
-                <div className="campo">
+
+              <div className="campo">
+                {selecao[0] && (
                   <div className="ata1">
-                    <span className="texto">{selecao[0].apelido}</span>
+                    <div>
+                      <span className="texto">{selecao[0].apelido}</span>
+                    </div>
                     <img
                       className="imagem"
                       src={selecao[0].foto}
                       alt="Exemplo de Imagem"
                     />
                   </div>
+                )}
+                {selecao[1] && (
                   <div className="ata2">
-                    <span>{selecao[1].apelido}</span>
+                    <div>
+                      <span>{selecao[1].apelido}</span>
+                    </div>
+
                     <img
                       className="imagem"
                       src={selecao[1].foto}
                       alt="Exemplo de Imagem"
                     />
                   </div>
+                )}
+                {selecao[2] && (
                   <div className="ata3">
-                    <span>{selecao[2].apelido}</span>
+                      <div>
+                      <span>{selecao[2].apelido}</span>
+                    </div>
                     <img
                       className="imagem"
                       src={selecao[2].foto}
                       alt="Exemplo de Imagem"
                     />
                   </div>
-                  {/* MEIAS */}
+                )}
+                {selecao[3] && (
                   <div className="mei1">
                     <span>{selecao[3].apelido}</span>
                     <img
@@ -348,7 +391,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
+                )}
+                {selecao[4] && (
                   <div className="mei2">
                     <span>{selecao[4].apelido}</span>
                     <img
@@ -357,7 +401,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
+                )}
+                {selecao[5] && (
                   <div className="mei3">
                     <span>{selecao[5].apelido}</span>
                     <img
@@ -366,9 +411,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
-                  {/* DEVENSOR */}
-
+                )}
+                {selecao[6] && (
                   <div className="dev1">
                     <span>{selecao[6].apelido}</span>
                     <img
@@ -377,7 +421,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
+                )}
+                {selecao[7] && (
                   <div className="dev2">
                     <span>{selecao[7].apelido}</span>
                     <img
@@ -386,7 +431,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
+                )}
+                {selecao[8] && (
                   <div className="dev3">
                     <span>{selecao[8].apelido}</span>
                     <img
@@ -395,6 +441,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
+                )}
+                {selecao[9] && (
                   <div className="dev4">
                     <span>{selecao[9].apelido}</span>
                     <img
@@ -403,9 +451,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
-                  {/* final */}
-
+                )}
+                {selecao[10] && (
                   <div className="gol">
                     <span>{selecao[10].apelido}</span>
                     <img
@@ -414,7 +461,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
+                )}
+                {selecao[11] && (
                   <div className="tec">
                     <span>{selecao[11].apelido}</span>
                     <img
@@ -423,10 +471,8 @@ export default function Home() {
                       alt="Exemplo de Imagem"
                     />
                   </div>
-
-                  {/* E assim por diante para os demais jogadores */}
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* <CustomizedTables rows={selecao} /> */}

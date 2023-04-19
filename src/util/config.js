@@ -4,6 +4,7 @@ const canais = [
     { label: "Blog-Campeão", value: "Blog-Campeão" },
     { label: "Betin", value: "Betin" },
     {label:  "Escola cartoleiros", value: "Escola cartoleiros" },
+    {label:  "Nosso Cartola", value: "Nosso Cartola" },
   ];
   const rodadas = [
     { label: "1", value: "1" },

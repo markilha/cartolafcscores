@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState,memo } from 'react';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-export default function InputSearch({
+ function InputSearch({
   filtered,
   setFiltered,
   rows,
@@ -44,3 +44,5 @@ export default function InputSearch({
     />
   );
 }
+
+export default memo(InputSearch)
