@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -7,14 +7,10 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
-import  firebase  from "../../services/firebase";
 
-import { collection, addDoc } from "firebase/firestore";
-import { toast } from "react-toastify";
-import { DadosContext } from "../../contexts/contextDados";
 
 const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) => {
-  const {atual,setAtual} = useContext(DadosContext)
+
   let caminhoFoto = atleta?.foto?.replace("FORMATO", "220x220");
 
   function retornaStatus() {
@@ -28,7 +24,7 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) 
     }
   }
 
-  const escCollectionRef = collection(firebase, "Escalacao");
+
 
   async function handleEnviar() {
     const at = {
