@@ -1,14 +1,21 @@
 import React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 
-const SelectPerson = ({ label, options, value, setValue}) => {
+const SelectPerson = ({ label, options, value, setValue,onAction}) => {
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    if (onAction) {
+      onAction(event.target.value);
+    }
+  };
   return (
     <FormControl variant="outlined" fullWidth size="small">
       <InputLabel htmlFor={label}>{label}</InputLabel>
       <Select
         label={label}
         value={value}
-        onChange={(event) => setValue(event.target.value)} 
+        onChange={handleChange} 
         labelWidth={70}
         inputProps={{
           name: label,

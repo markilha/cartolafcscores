@@ -28,8 +28,19 @@ export default function Home() {
   const [filterGrafico, setFilterGrafico] = useState([]);
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
+  const [posicaJog,setPosicaoJog] = useState('')
 
   const escCollectionRef = collection(firebase, "Escalacao");
+  const posicoes = [
+    {"label": "Goleiro", "value": "gol"},
+    {"label": "Zagueiro", "value": "zag"},
+    {"label": "Lateral", "value": "lat"},
+    {"label": "Meia", "value": "mei"},
+    {"label": "Atacante", "value": "ata"},
+    {"label": "Técnico", "value": "tec"},
+  ]
+   
+  
 
   //Puscando atletas api
   const { data, isLoading, error } = useQuery(
@@ -211,6 +222,36 @@ export default function Home() {
     }
   };
 
+  const handleChangePosicao = async (value) => {
+      const getEscalcao = await getDocs(escCollectionRef);
+      let atletas = [];
+      // eslint-disable-next-line array-callback-return
+      getEscalcao.docs.map((doc) => {
+        const documento = doc.data();
+        documento.id = doc.id;
+        atletas.push(documento);
+      });
+
+    const FiltradosPorRodada = atletas.filter((documento) => {
+      return documento.rodada == rodada;
+    });
+    const escalacoesPorJogador = somarEscalacoes(FiltradosPorRodada);
+    const jogadoresFiltradosPoPosicao = escalacoesPorJogador.filter(
+      (jogador) => jogador.posicao === value
+    );
+    const jogadoresUnicosPorApelido = Object.values(
+      jogadoresFiltradosPoPosicao.reduce((acc, jogador) => {
+        acc[jogador.apelido] = jogador;
+        return acc;
+      }, {})
+    ).sort((jogadorA, jogadorB) => jogadorB.escalacoes - jogadorA.escalacoes);
+
+    setFilterGrafico(jogadoresUnicosPorApelido)
+
+    
+
+  };
+
   return (
     <>
       <Header />
@@ -372,7 +413,7 @@ export default function Home() {
                 )}
                 {selecao[2] && (
                   <div className="ata3">
-                      <div>
+                    <div>
                       <span>{selecao[2].apelido}</span>
                     </div>
                     <img
@@ -487,20 +528,25 @@ export default function Home() {
                 maxHeight: "630px",
                 width: "100%",
               }}
-            >           
-              <CustomizedTables
-                rows={selecao}               
-              />
+            >
+              <CustomizedTables rows={selecao} />
             </div>
           </div>
         </div>
-       
-       
       </div>
       <div className={classes.container_item}>
-           <BarChartCustom data={filterGrafico} />
-        </div>
-    
+        <div style={{width:300,margin:10,marginLeft:50}}>
+      <SelectPerson
+                options={posicoes}
+                label={"Posição"}
+                value={posicaJog}
+                setValue={setPosicaoJog}
+                onAction={(value)=> handleChangePosicao(value)}
+              />
+        </div>        
+        <BarChartCustom data={filterGrafico} />
+        
+      </div>
     </>
   );
 }
