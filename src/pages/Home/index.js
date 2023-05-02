@@ -28,19 +28,17 @@ export default function Home() {
   const [filterGrafico, setFilterGrafico] = useState([]);
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
-  const [posicaJog,setPosicaoJog] = useState('')
+  const [posicaJog, setPosicaoJog] = useState("");
 
   const escCollectionRef = collection(firebase, "Escalacao");
   const posicoes = [
-    {"label": "Goleiro", "value": "gol"},
-    {"label": "Zagueiro", "value": "zag"},
-    {"label": "Lateral", "value": "lat"},
-    {"label": "Meia", "value": "mei"},
-    {"label": "Atacante", "value": "ata"},
-    {"label": "Técnico", "value": "tec"},
-  ]
-   
-  
+    { label: "Goleiro", value: "gol" },
+    { label: "Zagueiro", value: "zag" },
+    { label: "Lateral", value: "lat" },
+    { label: "Meia", value: "mei" },
+    { label: "Atacante", value: "ata" },
+    { label: "Técnico", value: "tec" },
+  ];
 
   //Puscando atletas api
   const { data, isLoading, error } = useQuery(
@@ -223,14 +221,14 @@ export default function Home() {
   };
 
   const handleChangePosicao = async (value) => {
-      const getEscalcao = await getDocs(escCollectionRef);
-      let atletas = [];
-      // eslint-disable-next-line array-callback-return
-      getEscalcao.docs.map((doc) => {
-        const documento = doc.data();
-        documento.id = doc.id;
-        atletas.push(documento);
-      });
+    const getEscalcao = await getDocs(escCollectionRef);
+    let atletas = [];
+    // eslint-disable-next-line array-callback-return
+    getEscalcao.docs.map((doc) => {
+      const documento = doc.data();
+      documento.id = doc.id;
+      atletas.push(documento);
+    });
 
     const FiltradosPorRodada = atletas.filter((documento) => {
       return documento.rodada == rodada;
@@ -246,15 +244,13 @@ export default function Home() {
       }, {})
     ).sort((jogadorA, jogadorB) => jogadorB.escalacoes - jogadorA.escalacoes);
 
-    setFilterGrafico(jogadoresUnicosPorApelido)
-
-    
-
+    setFilterGrafico(jogadoresUnicosPorApelido);
   };
 
   return (
     <>
       <Header />
+
       <div className={classes.container_grid}>
         <div className={classes.container_item}>
           <div className={classes.container_item2}>
@@ -535,23 +531,46 @@ export default function Home() {
         </div>
       </div>
       <div className={classes.container_item}>
-        <div style={{width:300,margin:10,marginLeft:50}}>
-      <SelectPerson
-                options={posicoes}
-                label={"Posição"}
-                value={posicaJog}
-                setValue={setPosicaoJog}
-                onAction={(value)=> handleChangePosicao(value)}
-              />
-        </div>        
+        <div style={{ width: 300, margin: 10, marginLeft: 50 }}>
+          <SelectPerson
+            options={posicoes}
+            label={"Posição"}
+            value={posicaJog}
+            setValue={setPosicaoJog}
+            onAction={(value) => handleChangePosicao(value)}
+          />
+        </div>
         <BarChartCustom data={filterGrafico} />
-        
       </div>
     </>
   );
 }
 
 const useStyles = makeStyles((theme) => ({
+  container_grid: {
+    display: "flex",
+    width: "98%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 20,
+  },
+  container_item: {
+    border: "1px solid",
+    borderRadius: 10,
+    width: "98%",
+    height: 700,
+    margin: 2,
+    padding: 10,
+  },
+  container_item2: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 2,
+    padding: 10  
+  },
   paper: {
     height: 99,
     width: 547,
@@ -576,21 +595,5 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 5,
-  },
-  container_grid: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-  },
-  container_item: {
-    width: "100%",
-    height: 700,
-    margin: 5,
-  },
-  container_item2: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
   },
 }));

@@ -1,3 +1,46 @@
+
+
+.container {
+  display: grid;
+  grid-template-areas: 
+  "i1 i1"
+  "i2 i3"
+  "i4 i5"
+  "i6 i6"
+  ;  
+  grid-template-rows: 80px 600px 600px 600px;
+  height: 100vh;
+  width: 100vw; 
+
+}
+.header {
+  grid-area: i1; 
+}
+.item2 {
+  grid-area: i2; 
+}
+
+.item3 {
+  grid-area: i3;
+  background: blue;
+}
+
+.item4 {
+  grid-area: i4;
+  background: green;
+}
+
+.item5 {
+  grid-area: i5;
+  background: brown;
+}
+
+.item6 {
+  grid-area: i6;
+}
+
+
+
 .button {
   width: 100px;
   margin: 20px;
@@ -157,4 +200,5 @@
   width: 150px;
   height: 80px;
 }
+
 
