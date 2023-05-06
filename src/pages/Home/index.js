@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Grid, Box, Button, Paper, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import SelectPerson from "../../components/control/select";
 
 import firebase from "../../services/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {getFirestore, collection, getDocs,getDoc, addDoc,doc,deleteDoc} from "firebase/firestore";
 import CustomizedTables from "../../components/table";
 import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
@@ -59,7 +59,7 @@ export default function Home() {
       let documentos = [];
       // eslint-disable-next-line array-callback-return
       getEscalcao.docs.map((doc) => {
-        const documento = doc.data();
+        const documento = doc.data();       
         documento.id = doc.id;
         documentos.push(documento);
       });
@@ -200,18 +200,65 @@ export default function Home() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
+  const db = getFirestore(); 
+
   async function handleEnviar() {
     try {
-      firedata?.map(async (atleta) => {
-        await addDoc(escCollectionRef, atleta);
-      });
-      toast.success("Atleta adicionado com sucesso!!!");
+      // Itera sobre cada atleta na array `firedata`
+      for (const atleta of firedata) {
+        console.log(atleta)
+        // Obtém a referência do documento usando o ID do atleta
+        const atletaRef = doc(escCollectionRef, atleta.id);
+  
+        // Obtém o snapshot do documento para verificar se ele existe
+        const atletaSnapshot = await getDoc(atletaRef);
+  
+        // Se o documento não existir, adiciona o atleta ao Firestore
+        if (!atletaSnapshot.exists()) {
+          await addDoc(escCollectionRef, atleta);
+        }
+      }
+  
+      toast.success("Atletas adicionados com sucesso!!!");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  }
+  
+
+  async function handleRemover(atletaId) {
+    try {
+      const atletaRef = doc(escCollectionRef, atletaId);
+      await deleteDoc(atletaRef);
+      toast.success("Atleta removido com sucesso!!!");
     } catch (error) {
       toast.error(error.message);
     }
   }
+ 
 
-  const handleDelete = (row) => {
+  // async function handleAtualizar() {
+  //   try {
+  //     await Promise.all(
+  //       firedata?.map(async (atleta) => {          
+  //         const docRef = doc(db, "Escalacao", atleta.id);
+  //         await updateDoc(docRef, atleta);
+  //       })
+  //     );
+  //     toast.success("Atletas atualizados com sucesso!!!");
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(error.message);
+  //   }
+  // }
+  
+
+
+  const handleDelete = async (row) => {
+    await handleRemover(row.id)
+
     const newData = [...firedata];
     const rowIndex = newData.findIndex((r) => r === row);
     if (rowIndex !== -1) {
@@ -355,6 +402,7 @@ export default function Home() {
               >
                 SALVAR
               </Button>
+            
               <CustomizedTables
                 rows={firedata}
                 onDelete={(row) => handleDelete(row)}

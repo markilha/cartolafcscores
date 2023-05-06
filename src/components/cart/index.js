@@ -6,6 +6,7 @@ import { Button,Paper } from "@material-ui/core";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { v4 as uuidv4 } from "uuid";
 
 
 
@@ -28,6 +29,7 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) 
 
   async function handleEnviar() {
     const at = {
+      id: uuidv4(),
       rodada: rodada,
       canal: canal,
       apelido: atleta.apelido,
