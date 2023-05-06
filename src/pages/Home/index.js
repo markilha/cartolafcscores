@@ -14,6 +14,7 @@ import CustomizedTables from "../../components/table";
 import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
 import { BarChartCustom } from "../../components/grafico/BarChart";
+import LineJogadoresPorRodada from "../../components/grafico/LieChart";
 import Header from "../../components/Header";
 import "./estilos.css";
 import { toast } from "react-toastify";
@@ -29,7 +30,7 @@ export default function Home() {
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
   const [posicaJog, setPosicaoJog] = useState("");
-
+ 
   const escCollectionRef = collection(firebase, "Escalacao");
   const posicoes = [
     { label: "Goleiro", value: "gol" },
@@ -66,8 +67,7 @@ export default function Home() {
 
       const documentosFiltrados = documentos.filter((documento) => {
         return documento.canal == canal && documento.rodada == rodada;
-      });
-
+      });  
       documentosFiltrados.sort((a, b) => {
         if (a.canal < b.canal) {
           return -1;
@@ -91,7 +91,7 @@ export default function Home() {
         const documento = doc.data();
         documento.id = doc.id;
         atletas.push(documento);
-      });
+      });   
 
       const FiltradosPorRodada = atletas.filter((documento) => {
         return documento.rodada == rodada;
@@ -142,7 +142,8 @@ export default function Home() {
       setPrecoTotal(totalTime.toFixed(2).toString());
 
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
-
+    
+    
       setFilterGrafico(SomaEscalacaoPoPosicao);
     }
     getFirebase();
@@ -206,8 +207,7 @@ export default function Home() {
   async function handleEnviar() {
     try {
       // Itera sobre cada atleta na array `firedata`
-      for (const atleta of firedata) {
-        console.log(atleta)
+      for (const atleta of firedata) {      
         // Obtém a referência do documento usando o ID do atleta
         const atletaRef = doc(escCollectionRef, atleta.id);
   
@@ -275,7 +275,7 @@ export default function Home() {
       const documento = doc.data();
       documento.id = doc.id;
       atletas.push(documento);
-    });
+    });  
 
     const FiltradosPorRodada = atletas.filter((documento) => {
       return documento.rodada == rodada;
@@ -507,18 +507,8 @@ export default function Home() {
                     />
                   </div>
                 )}
-                {selecao[7] && (
-                  <div className="dev2">
-                    <span>{selecao[7].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[7].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
                 {selecao[8] && (
-                  <div className="dev3">
+                  <div className="dev2">
                     <span>{selecao[8].apelido}</span>
                     <img
                       className="imagem"
@@ -528,11 +518,21 @@ export default function Home() {
                   </div>
                 )}
                 {selecao[9] && (
-                  <div className="dev4">
+                  <div className="dev3">
                     <span>{selecao[9].apelido}</span>
                     <img
                       className="imagem"
                       src={selecao[9].foto}
+                      alt="Exemplo de Imagem"
+                    />
+                  </div>
+                )}
+                {selecao[7] && (
+                  <div className="dev4">
+                    <span>{selecao[7].apelido}</span>
+                    <img
+                      className="imagem"
+                      src={selecao[7].foto}
                       alt="Exemplo de Imagem"
                     />
                   </div>
@@ -589,6 +589,7 @@ export default function Home() {
           />
         </div>
         <BarChartCustom data={filterGrafico} />
+        <LineJogadoresPorRodada escalacoesPorRodada={filterGrafico} />
       </div>
     </>
   );
