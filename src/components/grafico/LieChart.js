@@ -1,5 +1,5 @@
 import React from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend,Tooltip } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend,Tooltip ,ResponsiveContainer} from "recharts";
 
 const LineJogadoresPorRodada = ({ escalacoesPorRodada }) => {
 
@@ -21,6 +21,7 @@ const LineJogadoresPorRodada = ({ escalacoesPorRodada }) => {
 
 
   return (
+    <ResponsiveContainer width="100%" height="50%">
     <LineChart width={1400} height={300} data={escalacoesPorRodada}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="apelido" />
@@ -38,6 +39,7 @@ const LineJogadoresPorRodada = ({ escalacoesPorRodada }) => {
       ))} */}
        <Line type="monotone" dataKey="escalacoes" stroke="#82ca9d" />
     </LineChart>
+    </ResponsiveContainer>
   );
 };
 

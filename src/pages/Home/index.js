@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Button, Typography } from "@material-ui/core";
+import { Grid, Box } from "@mui/material";
 
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
@@ -9,7 +10,15 @@ import { useQuery } from "react-query";
 import SelectPerson from "../../components/control/select";
 
 import firebase from "../../services/firebase";
-import {getFirestore, collection, getDocs,getDoc, addDoc,doc,deleteDoc} from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  addDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import CustomizedTables from "../../components/table";
 import { DadosContext } from "../../contexts/contextDados";
 import { canais, rodadas } from "../../util/config";
@@ -30,7 +39,7 @@ export default function Home() {
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
   const [posicaJog, setPosicaoJog] = useState("");
- 
+
   const escCollectionRef = collection(firebase, "Escalacao");
   const posicoes = [
     { label: "Goleiro", value: "gol" },
@@ -60,14 +69,14 @@ export default function Home() {
       let documentos = [];
       // eslint-disable-next-line array-callback-return
       getEscalcao.docs.map((doc) => {
-        const documento = doc.data();       
+        const documento = doc.data();
         documento.id = doc.id;
         documentos.push(documento);
       });
 
       const documentosFiltrados = documentos.filter((documento) => {
         return documento.canal == canal && documento.rodada == rodada;
-      });  
+      });
       documentosFiltrados.sort((a, b) => {
         if (a.canal < b.canal) {
           return -1;
@@ -91,7 +100,7 @@ export default function Home() {
         const documento = doc.data();
         documento.id = doc.id;
         atletas.push(documento);
-      });   
+      });
 
       const FiltradosPorRodada = atletas.filter((documento) => {
         return documento.rodada == rodada;
@@ -142,8 +151,7 @@ export default function Home() {
       setPrecoTotal(totalTime.toFixed(2).toString());
 
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
-    
-    
+
       setFilterGrafico(SomaEscalacaoPoPosicao);
     }
     getFirebase();
@@ -202,31 +210,30 @@ export default function Home() {
     return <div>Error: {error.message}</div>;
   }
 
-  const db = getFirestore(); 
+  const db = getFirestore();
 
   async function handleEnviar() {
     try {
       // Itera sobre cada atleta na array `firedata`
-      for (const atleta of firedata) {      
+      for (const atleta of firedata) {
         // Obtém a referência do documento usando o ID do atleta
         const atletaRef = doc(escCollectionRef, atleta.id);
-  
+
         // Obtém o snapshot do documento para verificar se ele existe
         const atletaSnapshot = await getDoc(atletaRef);
-  
+
         // Se o documento não existir, adiciona o atleta ao Firestore
         if (!atletaSnapshot.exists()) {
           await addDoc(escCollectionRef, atleta);
         }
       }
-  
+
       toast.success("Atletas adicionados com sucesso!!!");
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
   }
-  
 
   async function handleRemover(atletaId) {
     try {
@@ -237,12 +244,11 @@ export default function Home() {
       toast.error(error.message);
     }
   }
- 
 
   // async function handleAtualizar() {
   //   try {
   //     await Promise.all(
-  //       firedata?.map(async (atleta) => {          
+  //       firedata?.map(async (atleta) => {
   //         const docRef = doc(db, "Escalacao", atleta.id);
   //         await updateDoc(docRef, atleta);
   //       })
@@ -253,11 +259,9 @@ export default function Home() {
   //     toast.error(error.message);
   //   }
   // }
-  
-
 
   const handleDelete = async (row) => {
-    await handleRemover(row.id)
+    await handleRemover(row.id);
 
     const newData = [...firedata];
     const rowIndex = newData.findIndex((r) => r === row);
@@ -275,7 +279,7 @@ export default function Home() {
       const documento = doc.data();
       documento.id = doc.id;
       atletas.push(documento);
-    });  
+    });
 
     const FiltradosPorRodada = atletas.filter((documento) => {
       return documento.rodada == rodada;
@@ -298,299 +302,326 @@ export default function Home() {
     <>
       <Header />
 
-      <div className={classes.container_grid}>
-        <div className={classes.container_item}>
-          <div className={classes.container_item2}>
-            <div style={{ width: "50%", margin: 5 }}>
-              <InputSearch
-                filtered={filted}
-                setFiltered={setFilted}
-                rows={data.atletas}
-                searchFields={["apelido", "minimo_para_valorizar"]}
-              />
-            </div>
-            <div style={{ width: "30%", margin: 5 }}>
-              <SelectPerson
-                options={canais}
-                label={"Canais"}
-                value={canal}
-                setValue={setCanal}
-              />
-            </div>
-            <div style={{ width: "20%", margin: 5 }}>
-              <SelectPerson
-                options={rodadas}
-                label={"rodada"}
-                value={rodada}
-                setValue={setRodada}
-              />
-            </div>
-          </div>
-
-          <div className={classes.container_item2}>
-            <Button variant="outlined" size="small" className={classes.button}>
-              POSIÇÃO
-            </Button>
-            <Button variant="outlined" size="small" className={classes.button}>
-              STATUS
-            </Button>
-            <Button variant="outlined" size="small" className={classes.button}>
-              PREÇO
-            </Button>
-            <Button variant="outlined" size="small" className={classes.button}>
-              TIME
-            </Button>
-          </div>
-
-          <div
-            style={{
-              width: "98%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                overflowY: "auto",
-                maxHeight: "550px",
-                width: "100%",
-              }}
-            >
-              {filted?.map((item) => {
-                const filterClube = Object.values(data.clubes).find(
-                  (objeto) => objeto.id === item.clube_id
-                );
-                const status = Object.values(data.status).find(
-                  (objeto) => objeto.id === item.status_id
-                );
-                const posicao = Object.values(data.posicoes).find(
-                  (objeto) => objeto.id === item.posicao_id
-                );
-                return (
-                  <PersonCart
-                    atleta={item}
-                    clube={filterClube}
-                    status={status}
-                    posicao={posicao}
-                    canal={canal}
-                    rodada={rodada}
-                    setDados={setFiredata}
-                    dados={firedata}
+      <Box sx={{display:'flex', alignItems:'center', justifyContent:'center', width: "98%"}}>
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          {/* BUSCA NA API */}
+          <Grid item xs={12} sm={12} md={6}>
+            <div className={classes.container_item}>
+              <div className={classes.container_item2}>
+                <div style={{ width: "50%", margin: 5 }}>
+                  <InputSearch
+                    filtered={filted}
+                    setFiltered={setFilted}
+                    rows={data.atletas}
+                    searchFields={["apelido", "minimo_para_valorizar"]}
                   />
-                );
-              })}
-            </div>
-          </div>
-        </div>
+                </div>
+                <div style={{ width: "30%", margin: 5 }}>
+                  <SelectPerson
+                    options={canais}
+                    label={"Canais"}
+                    value={canal}
+                    setValue={setCanal}
+                  />
+                </div>
+                <div style={{ width: "20%", margin: 5 }}>
+                  <SelectPerson
+                    options={rodadas}
+                    label={"rodada"}
+                    value={rodada}
+                    setValue={setRodada}
+                  />
+                </div>
+              </div>
 
-        {/*ESCOLHA DOS JOGADORES */}
+              <div className={classes.container_item2}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                >
+                  POSIÇÃO
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                >
+                  STATUS
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                >
+                  PREÇO
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                >
+                  TIME
+                </Button>
+              </div>
 
-        <div className={classes.container_item}>
-          <div className={classes.container_item2}>
-            <div
-              style={{
-                overflowY: "auto",
-                maxHeight: "630px",
-                width: "100%",
-              }}
-            >
-              <Button
-                variant="outlined"
-                size="small"
-                className={classes.button}
-                onClick={() => handleEnviar()}
+              <div
+                style={{
+                  width: "98%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                SALVAR
-              </Button>
-            
-              <CustomizedTables
-                rows={firedata}
-                onDelete={(row) => handleDelete(row)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={classes.container_grid}>
-        <div className={classes.container_item}>
-          <Typography variant="h6" gutterBottom>
-            SELEÇÃO - C$ {precoTotal}
-          </Typography>
-          <div
-            style={{
-              width: "90%",
-
-              justifyContent: "center",
-              height: 550,
-              margin: 10,
-            }}
-          >
-            <div>
-              {/* <img src="img/campinho.png" alt="Exemplo de Imagem" width={600} height={500}/> */}
-
-              <div className="campo">
-                {selecao[0] && (
-                  <div className="ata1">
-                    <div>
-                      <span className="texto">{selecao[0].apelido}</span>
-                    </div>
-                    <img
-                      className="imagem"
-                      src={selecao[0].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[1] && (
-                  <div className="ata2">
-                    <div>
-                      <span>{selecao[1].apelido}</span>
-                    </div>
-
-                    <img
-                      className="imagem"
-                      src={selecao[1].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[2] && (
-                  <div className="ata3">
-                    <div>
-                      <span>{selecao[2].apelido}</span>
-                    </div>
-                    <img
-                      className="imagem"
-                      src={selecao[2].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[3] && (
-                  <div className="mei1">
-                    <span>{selecao[3].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[3].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[4] && (
-                  <div className="mei2">
-                    <span>{selecao[4].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[4].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[5] && (
-                  <div className="mei3">
-                    <span>{selecao[5].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[5].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[6] && (
-                  <div className="dev1">
-                    <span>{selecao[6].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[6].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[8] && (
-                  <div className="dev2">
-                    <span>{selecao[8].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[8].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[9] && (
-                  <div className="dev3">
-                    <span>{selecao[9].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[9].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[7] && (
-                  <div className="dev4">
-                    <span>{selecao[7].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[7].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[10] && (
-                  <div className="gol">
-                    <span>{selecao[10].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[10].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
-                {selecao[11] && (
-                  <div className="tec">
-                    <span>{selecao[11].apelido}</span>
-                    <img
-                      className="imagem"
-                      src={selecao[11].foto}
-                      alt="Exemplo de Imagem"
-                    />
-                  </div>
-                )}
+                <div
+                  style={{
+                    overflowY: "auto",
+                    maxHeight: "550px",
+                    width: "100%",
+                  }}
+                >
+                  {filted?.map((item) => {
+                    const filterClube = Object.values(data.clubes).find(
+                      (objeto) => objeto.id === item.clube_id
+                    );
+                    const status = Object.values(data.status).find(
+                      (objeto) => objeto.id === item.status_id
+                    );
+                    const posicao = Object.values(data.posicoes).find(
+                      (objeto) => objeto.id === item.posicao_id
+                    );
+                    return (
+                      <PersonCart
+                        atleta={item}
+                        clube={filterClube}
+                        status={status}
+                        posicao={posicao}
+                        canal={canal}
+                        rodada={rodada}
+                        setDados={setFiredata}
+                        dados={firedata}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
+          </Grid>
+          {/*TABELA DAS ESCOLHAS */}
+          <Grid item xs={12} sm={12} md={6}>
+            <div className={classes.container_item}>
+              <div className={classes.container_item2}>
+                <div
+                  style={{
+                    overflowY: "auto",
+                    maxHeight: "630px",
+                    width: "100%",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={() => handleEnviar()}
+                  >
+                    SALVAR
+                  </Button>
 
-            {/* <CustomizedTables rows={selecao} /> */}
-          </div>
-        </div>
-
-        <div className={classes.container_item}>
-          <div className={classes.container_item2}>
-            <div
-              style={{
-                overflowY: "auto",
-                maxHeight: "630px",
-                width: "100%",
-              }}
-            >
-              <CustomizedTables rows={selecao} />
+                  <CustomizedTables
+                    rows={firedata}
+                    onDelete={(row) => handleDelete(row)}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div className={classes.container_item}>
-        <div style={{ width: 300, margin: 10, marginLeft: 50 }}>
-          <SelectPerson
-            options={posicoes}
-            label={"Posição"}
-            value={posicaJog}
-            setValue={setPosicaoJog}
-            onAction={(value) => handleChangePosicao(value)}
-          />
-        </div>
-        <BarChartCustom data={filterGrafico} />
-        <LineJogadoresPorRodada escalacoesPorRodada={filterGrafico} />
-      </div>
+          </Grid>
+          {/* SELEÇÃO*/}
+          <Grid item xs={12} sm={12} md={6}>
+            <div className={classes.container_item}>
+              <Typography variant="h6" gutterBottom>
+                SELEÇÃO - C$ {precoTotal}
+              </Typography>
+              <div
+                style={{
+                  width: "90%",
+
+                  justifyContent: "center",
+                  height: 550,
+                  margin: 10,
+                }}
+              >
+                <div>
+                  {/* <img src="img/campinho.png" alt="Exemplo de Imagem" width={600} height={500}/> */}
+
+                  <div className="campo">
+                    {selecao[0] && (
+                      <div className="ata1">
+                        <div>
+                          <span className="texto">{selecao[0].apelido}</span>
+                        </div>
+                        <img
+                          className="imagem"
+                          src={selecao[0].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[1] && (
+                      <div className="ata2">
+                        <div>
+                          <span>{selecao[1].apelido}</span>
+                        </div>
+
+                        <img
+                          className="imagem"
+                          src={selecao[1].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[2] && (
+                      <div className="ata3">
+                        <div>
+                          <span>{selecao[2].apelido}</span>
+                        </div>
+                        <img
+                          className="imagem"
+                          src={selecao[2].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[3] && (
+                      <div className="mei1">
+                        <span>{selecao[3].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[3].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[4] && (
+                      <div className="mei2">
+                        <span>{selecao[4].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[4].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[5] && (
+                      <div className="mei3">
+                        <span>{selecao[5].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[5].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[6] && (
+                      <div className="dev1">
+                        <span>{selecao[6].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[6].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[8] && (
+                      <div className="dev2">
+                        <span>{selecao[8].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[8].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[9] && (
+                      <div className="dev3">
+                        <span>{selecao[9].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[9].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[7] && (
+                      <div className="dev4">
+                        <span>{selecao[7].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[7].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[10] && (
+                      <div className="gol">
+                        <span>{selecao[10].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[10].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                    {selecao[11] && (
+                      <div className="tec">
+                        <span>{selecao[11].apelido}</span>
+                        <img
+                          className="imagem"
+                          src={selecao[11].foto}
+                          alt="Exemplo de Imagem"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* <CustomizedTables rows={selecao} /> */}
+              </div>
+            </div>
+          </Grid>
+          {/* TABELA SELECAO*/}
+          <Grid item xs={12} sm={12} md={6}>
+            <div className={classes.container_item}>
+              <div className={classes.container_item2}>
+                <div
+                  style={{
+                    overflowY: "auto",
+                    maxHeight: "630px",
+                    width: "100%",
+                  }}
+                >
+                  <CustomizedTables rows={selecao} />
+                </div>
+              </div>
+            </div>
+          </Grid>
+          {/* GRAFICO BARRA*/}
+          <Grid item xs={12}>
+            <div className={classes.container_item}>
+              <div style={{ width: 300, margin: 10, marginLeft: 50 }}>
+                <SelectPerson
+                  options={posicoes}
+                  label={"Posição"}
+                  value={posicaJog}
+                  setValue={setPosicaoJog}
+                  onAction={(value) => handleChangePosicao(value)}
+                />
+              </div>
+              <BarChartCustom data={filterGrafico} />
+              <LineJogadoresPorRodada escalacoesPorRodada={filterGrafico} />
+            </div>
+          </Grid>       
+        
+        </Grid>
+      </Box>
     </>
   );
 }
@@ -618,7 +649,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     margin: 2,
-    padding: 10  
+    padding: 10,
   },
   paper: {
     height: 99,
