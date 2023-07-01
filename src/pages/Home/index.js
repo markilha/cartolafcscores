@@ -11,7 +11,6 @@ import SelectPerson from "../../components/control/select";
 
 import firebase from "../../services/firebase";
 import {
-  getFirestore,
   collection,
   getDocs,
   getDoc,
@@ -27,6 +26,7 @@ import LineJogadoresPorRodada from "../../components/grafico/LieChart";
 import Header from "../../components/Header";
 import "./estilos.css";
 import { toast } from "react-toastify";
+import SimpleAccordion from "../../components/accordion";
 
 export default function Home() {
   const classes = useStyles();
@@ -75,7 +75,7 @@ export default function Home() {
       });
 
       const documentosFiltrados = documentos.filter((documento) => {
-        return documento.canal == canal && documento.rodada == rodada;
+        return documento.canal === canal && documento.rodada === rodada;
       });
       documentosFiltrados.sort((a, b) => {
         if (a.canal < b.canal) {
@@ -89,6 +89,7 @@ export default function Home() {
       setFiredata(documentosFiltrados);
     }
     getFirebase();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rodada, atual, canal]);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function Home() {
       });
 
       const FiltradosPorRodada = atletas.filter((documento) => {
-        return documento.rodada == rodada;
+        return documento.rodada === rodada;
       });
 
       const jogadoresMais = filtrarJogadoresMaisEscaladosPorPosicao(
@@ -147,6 +148,9 @@ export default function Home() {
       ];
 
       setSelecao(mais);
+      const re = encontrarJogadoresProximoValor(mais, 120);
+      console.log("Jogadores: ", re);
+
       const totalTime = somarvalor(mais);
       setPrecoTotal(totalTime.toFixed(2).toString());
 
@@ -155,7 +159,26 @@ export default function Home() {
       setFilterGrafico(SomaEscalacaoPoPosicao);
     }
     getFirebase();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rodada]);
+
+  function encontrarJogadoresProximoValor(jogadores, valor) {
+    const jogadoresOrdenados = jogadores.sort((a, b) => a.preco - b.preco); // Ordenar os jogadores pelo preço
+    let somaAtual = 0;
+    let indice = 0;
+
+    // Percorrer a lista de jogadores e encontrar a soma mais próxima do valor informado
+    for (let i = 0; i < jogadoresOrdenados.length; i++) {
+      if (somaAtual + jogadoresOrdenados[i].preco <= valor) {
+        somaAtual += jogadoresOrdenados[i].preco;
+        indice = i;
+      } else {
+        break;
+      }
+    }
+
+    return jogadoresOrdenados.slice(0, indice + 1);
+  }
 
   function somarvalor(array) {
     let soma = 0;
@@ -209,8 +232,6 @@ export default function Home() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
-  const db = getFirestore();
 
   async function handleEnviar() {
     try {
@@ -282,7 +303,7 @@ export default function Home() {
     });
 
     const FiltradosPorRodada = atletas.filter((documento) => {
-      return documento.rodada == rodada;
+      return documento.rodada === rodada;
     });
     const escalacoesPorJogador = somarEscalacoes(FiltradosPorRodada);
     const jogadoresFiltradosPoPosicao = escalacoesPorJogador.filter(
@@ -302,12 +323,19 @@ export default function Home() {
     <>
       <Header />
 
-      <Box sx={{display:'flex', alignItems:'center', justifyContent:'center', width: "98%"}}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "98%",
+        }}
+      >
         <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           {/* BUSCA NA API */}
           <Grid item xs={12} sm={12} md={6}>
             <div className={classes.container_item}>
-              <div className={classes.container_item2}>
+              <div className={classes.search}>
                 <div style={{ width: "50%", margin: 5 }}>
                   <InputSearch
                     filtered={filted}
@@ -316,7 +344,7 @@ export default function Home() {
                     searchFields={["apelido", "minimo_para_valorizar"]}
                   />
                 </div>
-                <div style={{ width: "30%", margin: 5 }}>
+                <div style={{ width: "20%", margin: 5 }}>
                   <SelectPerson
                     options={canais}
                     label={"Canais"}
@@ -334,75 +362,46 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className={classes.container_item2}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                >
-                  POSIÇÃO
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                >
-                  STATUS
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                >
-                  PREÇO
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                >
-                  TIME
-                </Button>
-              </div>
-
               <div
                 style={{
-                  width: "98%",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  overflowY: "auto",
+                  maxHeight: "550px",
+                  width: "100%",
                 }}
               >
-                <div
-                  style={{
-                    overflowY: "auto",
-                    maxHeight: "550px",
-                    width: "100%",
-                  }}
-                >
-                  {filted?.map((item) => {
-                    const filterClube = Object.values(data.clubes).find(
-                      (objeto) => objeto.id === item.clube_id
-                    );
-                    const status = Object.values(data.status).find(
-                      (objeto) => objeto.id === item.status_id
-                    );
-                    const posicao = Object.values(data.posicoes).find(
-                      (objeto) => objeto.id === item.posicao_id
-                    );
-                    return (
-                      <PersonCart
-                        atleta={item}
-                        clube={filterClube}
-                        status={status}
-                        posicao={posicao}
-                        canal={canal}
-                        rodada={rodada}
-                        setDados={setFiredata}
-                        dados={firedata}
-                      />
-                    );
-                  })}
-                </div>
+                {filted?.map((item) => {
+                  const filterClube = Object.values(data.clubes).find(
+                    (objeto) => objeto.id === item.clube_id
+                  );
+                  const status = Object.values(data.status).find(
+                    (objeto) => objeto.id === item.status_id
+                  );
+                  const posicao = Object.values(data.posicoes).find(
+                    (objeto) => objeto.id === item.posicao_id
+                  );
+                  return (
+                    <SimpleAccordion
+                      atleta={item}
+                      clube={filterClube}
+                      status={status}
+                      posicao={posicao}
+                      canal={canal}
+                      rodada={rodada}
+                      setDados={setFiredata}
+                      dados={firedata}
+                    />
+                    // <PersonCart
+                    //   atleta={item}
+                    //   clube={filterClube}
+                    //   status={status}
+                    //   posicao={posicao}
+                    //   canal={canal}
+                    //   rodada={rodada}
+                    //   setDados={setFiredata}
+                    //   dados={firedata}
+                    // />
+                  );
+                })}
               </div>
             </div>
           </Grid>
@@ -618,8 +617,7 @@ export default function Home() {
               <BarChartCustom data={filterGrafico} />
               <LineJogadoresPorRodada escalacoesPorRodada={filterGrafico} />
             </div>
-          </Grid>       
-        
+          </Grid>
         </Grid>
       </Box>
     </>
@@ -634,6 +632,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     margin: 20,
+  },
+  search: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: 5,
   },
   container_item: {
     border: "1px solid",
