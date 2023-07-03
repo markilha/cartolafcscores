@@ -19,7 +19,7 @@ export default function SimpleAccordion({
   posicao,
   canal,
   rodada,
-  dados,
+  dados,  
   setDados,
 }) {
   let caminhoFoto = atleta?.foto?.replace("FORMATO", "220x220");

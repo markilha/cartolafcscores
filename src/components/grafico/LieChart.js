@@ -10,11 +10,7 @@ const LineJogadoresPorRodada = ({ escalacoesPorRodada }) => {
       rodada,
       ...escalacoes,
     };
-  });
-
-  console.log(escalacoesPorRodada)
-
-  
+  });  
 
   // Obtém a lista de jogadores
   const jogadores = Object.keys(escalacoesPorRodada);

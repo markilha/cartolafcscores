@@ -30,7 +30,6 @@ import SimpleAccordion from "../../components/accordion";
 
 export default function Home() {
   const classes = useStyles();
-  const { atual } = useContext(DadosContext);
   const [filted, setFilted] = useState([]);
   const [canal, setCanal] = useState("");
   const [rodada, setRodada] = useState(1);
@@ -39,6 +38,8 @@ export default function Home() {
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
   const [posicaJog, setPosicaoJog] = useState("");
+  const [atual,setAtual] = useState(false)
+  const [dataEscolhido, setDataEscolhido] = useState([]);
 
   const escCollectionRef = collection(firebase, "Escalacao");
   const posicoes = [
@@ -61,52 +62,31 @@ export default function Home() {
     { refetchOnWindowFocus: false }
   );
 
+ 
+
+ 
+
   useEffect(() => {
     async function getFirebase() {
-      const getEscalcao = await getDocs(escCollectionRef).catch((error) =>
-        console.log(error)
-      );
-      let documentos = [];
-      // eslint-disable-next-line array-callback-return
+      const getEscalcao = await getDocs(escCollectionRef);     
+      let documentos = [];      
       getEscalcao.docs.map((doc) => {
         const documento = doc.data();
         documento.id = doc.id;
         documentos.push(documento);
-      });
-
-      const documentosFiltrados = documentos.filter((documento) => {
-        return documento.canal === canal && documento.rodada === rodada;
-      });
-      documentosFiltrados.sort((a, b) => {
-        if (a.canal < b.canal) {
-          return -1;
-        }
-        if (a.canal > b.canal) {
-          return 1;
-        }
-        return 0;
-      });
-      setFiredata(documentosFiltrados);
+      });    
+      setFiredata(documentos);      
     }
     getFirebase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rodada, atual, canal]);
+  }, [atual]);
 
-  useEffect(() => {
-    async function getFirebase() {
-      const getEscalcao = await getDocs(escCollectionRef);
-      let atletas = [];
-      // eslint-disable-next-line array-callback-return
-      getEscalcao.docs.map((doc) => {
-        const documento = doc.data();
-        documento.id = doc.id;
-        atletas.push(documento);
-      });
 
-      const FiltradosPorRodada = atletas.filter((documento) => {
-        return documento.rodada === rodada;
-      });
 
+  async function handleRodada(value){
+    async function getFirebase() { 
+      const FiltradosPorRodada = firedata.filter((documento) => {
+        return documento.rodada === value;
+      }); 
       const jogadoresMais = filtrarJogadoresMaisEscaladosPorPosicao(
         FiltradosPorRodada,
         "ata",
@@ -146,21 +126,17 @@ export default function Home() {
         ...Mais_gol,
         ...Mais_tec,
       ];
-
-      setSelecao(mais);
-      const re = encontrarJogadoresProximoValor(mais, 120);
-      console.log("Jogadores: ", re);
-
+  
+      setSelecao(mais);     
       const totalTime = somarvalor(mais);
       setPrecoTotal(totalTime.toFixed(2).toString());
-
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
-
       setFilterGrafico(SomaEscalacaoPoPosicao);
     }
     getFirebase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rodada]);
+  }
+
+
 
   function encontrarJogadoresProximoValor(jogadores, valor) {
     const jogadoresOrdenados = jogadores.sort((a, b) => a.preco - b.preco); // Ordenar os jogadores pelo preço
@@ -234,21 +210,18 @@ export default function Home() {
   }
 
   async function handleEnviar() {
-    try {
-      // Itera sobre cada atleta na array `firedata`
-      for (const atleta of firedata) {
-        // Obtém a referência do documento usando o ID do atleta
-        const atletaRef = doc(escCollectionRef, atleta.id);
+    try {     
+      for (const atleta of dataEscolhido) {  
+        await addDoc(escCollectionRef, atleta);     
+        // const atletaRef = doc(escCollectionRef, atleta.id);  
 
-        // Obtém o snapshot do documento para verificar se ele existe
-        const atletaSnapshot = await getDoc(atletaRef);
-
-        // Se o documento não existir, adiciona o atleta ao Firestore
-        if (!atletaSnapshot.exists()) {
-          await addDoc(escCollectionRef, atleta);
-        }
+        // const atletaSnapshot = await getDoc(atletaRef);
+        // if (!atletaSnapshot.exists()) {
+        //   await addDoc(escCollectionRef, atleta);
+        // }
       }
-
+      setAtual(!atual)
+      
       toast.success("Atletas adicionados com sucesso!!!");
     } catch (error) {
       console.log(error);
@@ -256,53 +229,29 @@ export default function Home() {
     }
   }
 
-  async function handleRemover(atletaId) {
-    try {
-      const atletaRef = doc(escCollectionRef, atletaId);
-      await deleteDoc(atletaRef);
-      toast.success("Atleta removido com sucesso!!!");
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  // async function handleAtualizar() {
+  // async function handleRemover(atletaId) {
   //   try {
-  //     await Promise.all(
-  //       firedata?.map(async (atleta) => {
-  //         const docRef = doc(db, "Escalacao", atleta.id);
-  //         await updateDoc(docRef, atleta);
-  //       })
-  //     );
-  //     toast.success("Atletas atualizados com sucesso!!!");
+  //     const atletaRef = doc(escCollectionRef, atletaId);
+  //     await deleteDoc(atletaRef);
+  //     toast.success("Atleta removido com sucesso!!!");
   //   } catch (error) {
-  //     console.log(error);
   //     toast.error(error.message);
   //   }
   // }
 
   const handleDelete = async (row) => {
-    await handleRemover(row.id);
-
-    const newData = [...firedata];
+   // await handleRemover(row.id);
+    const newData = [...dataEscolhido];
     const rowIndex = newData.findIndex((r) => r === row);
     if (rowIndex !== -1) {
       newData.splice(rowIndex, 1);
-      setFiredata(newData);
+      setDataEscolhido(newData);
     }
   };
 
   const handleChangePosicao = async (value) => {
-    const getEscalcao = await getDocs(escCollectionRef);
-    let atletas = [];
-    // eslint-disable-next-line array-callback-return
-    getEscalcao.docs.map((doc) => {
-      const documento = doc.data();
-      documento.id = doc.id;
-      atletas.push(documento);
-    });
-
-    const FiltradosPorRodada = atletas.filter((documento) => {
+  
+    const FiltradosPorRodada = firedata.filter((documento) => {
       return documento.rodada === rodada;
     });
     const escalacoesPorJogador = somarEscalacoes(FiltradosPorRodada);
@@ -319,10 +268,19 @@ export default function Home() {
     setFilterGrafico(jogadoresUnicosPorApelido);
   };
 
+  function handleCanal(value){
+    const FiltradosPorRodada = firedata.filter((documento) => {
+      return documento.rodada === rodada;
+    }); 
+    const FiltradosPorCanal = FiltradosPorRodada.filter((documento) => {
+      return documento.canal === value;
+    });   
+    setDataEscolhido(FiltradosPorCanal)
+  }
+
   return (
     <>
       <Header />
-
       <Box
         sx={{
           display: "flex",
@@ -350,6 +308,7 @@ export default function Home() {
                     label={"Canais"}
                     value={canal}
                     setValue={setCanal}
+                    onAction={(value)=> handleCanal(value)}
                   />
                 </div>
                 <div style={{ width: "20%", margin: 5 }}>
@@ -358,6 +317,7 @@ export default function Home() {
                     label={"rodada"}
                     value={rodada}
                     setValue={setRodada}
+                    onAction={(value)=> handleRodada(value)}                    
                   />
                 </div>
               </div>
@@ -387,8 +347,8 @@ export default function Home() {
                       posicao={posicao}
                       canal={canal}
                       rodada={rodada}
-                      setDados={setFiredata}
-                      dados={firedata}
+                      setDados={setDataEscolhido}
+                      dados={dataEscolhido}
                     />
                     // <PersonCart
                     //   atleta={item}
@@ -426,7 +386,7 @@ export default function Home() {
                   </Button>
 
                   <CustomizedTables
-                    rows={firedata}
+                    rows={dataEscolhido}
                     onDelete={(row) => handleDelete(row)}
                   />
                 </div>
@@ -611,7 +571,7 @@ export default function Home() {
                   label={"Posição"}
                   value={posicaJog}
                   setValue={setPosicaoJog}
-                  onAction={(value) => handleChangePosicao(value)}
+                  onAction={(value) => handleChangePosicao(value)}                  
                 />
               </div>
               <BarChartCustom data={filterGrafico} />
