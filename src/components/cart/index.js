@@ -23,9 +23,7 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) 
       default:
         return <CancelIcon style={{ color: "red" }} />;
     }
-  }
-
-
+  } 
 
   async function handleEnviar() {
     const at = {
@@ -38,12 +36,9 @@ const Cart = ({ atleta, clube, status, posicao, canal, rodada,dados,setDados }) 
       clube: clube.abreviacao,
       preco: atleta.preco_num,
       valorizacao: atleta.minimo_para_valorizar,
-      foto:caminhoFoto
-    };
-    setDados([...dados,at])
-    // await addDoc(escCollectionRef, at);
-    // setAtual(!atual)
-    //toast.success("Atleta adicionado com sucesso!!!");
+      foto: caminhoFoto,
+    };   
+    setDados([...dados, at]);
   }
 
  

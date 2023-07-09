@@ -39,7 +39,7 @@ import SearchIcon from '@mui/icons-material/Search';
             </IconButton>
           </InputAdornment>
         ),
-        style: { borderRadius: '16px' }, // opcional, caso queira arredondar as bordas
+        style: { borderRadius: '16px' }
       }}
     />
   );

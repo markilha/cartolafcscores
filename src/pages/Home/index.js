@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Button, Typography } from "@material-ui/core";
-import { Grid, Box } from "@mui/material";
+import React, { useEffect, useState, useDeferredValue } from "react";
+
+import { Grid, Box,TextField,Button, Typography  } from "@mui/material";
 
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
@@ -38,8 +38,10 @@ export default function Home() {
   const [selecao, setSelecao] = useState([]);
   const [precoTotal, setPrecoTotal] = useState("");
   const [posicaJog, setPosicaoJog] = useState("");
-  const [atual,setAtual] = useState(false)
+  const [atual, setAtual] = useState(false);
   const [dataEscolhido, setDataEscolhido] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const DeferredValue = useDeferredValue(searchText)
 
   const escCollectionRef = collection(firebase, "Escalacao");
   const posicoes = [
@@ -62,31 +64,25 @@ export default function Home() {
     { refetchOnWindowFocus: false }
   );
 
- 
-
- 
-
   useEffect(() => {
     async function getFirebase() {
-      const getEscalcao = await getDocs(escCollectionRef);     
-      let documentos = [];      
+      const getEscalcao = await getDocs(escCollectionRef);
+      let documentos = [];
       getEscalcao.docs.map((doc) => {
         const documento = doc.data();
         documento.id = doc.id;
         documentos.push(documento);
-      });    
-      setFiredata(documentos);      
+      });
+      setFiredata(documentos);
     }
     getFirebase();
   }, [atual]);
 
-
-
-  async function handleRodada(value){
-    async function getFirebase() { 
+  async function handleRodada(value) {
+    async function getFirebase() {
       const FiltradosPorRodada = firedata.filter((documento) => {
         return documento.rodada === value;
-      }); 
+      });
       const jogadoresMais = filtrarJogadoresMaisEscaladosPorPosicao(
         FiltradosPorRodada,
         "ata",
@@ -126,8 +122,8 @@ export default function Home() {
         ...Mais_gol,
         ...Mais_tec,
       ];
-  
-      setSelecao(mais);     
+
+      setSelecao(mais);
       const totalTime = somarvalor(mais);
       setPrecoTotal(totalTime.toFixed(2).toString());
       const SomaEscalacaoPoPosicao = somarEscalacoes(FiltradosPorRodada);
@@ -135,8 +131,6 @@ export default function Home() {
     }
     getFirebase();
   }
-
-
 
   function encontrarJogadoresProximoValor(jogadores, valor) {
     const jogadoresOrdenados = jogadores.sort((a, b) => a.preco - b.preco); // Ordenar os jogadores pelo preço
@@ -210,18 +204,18 @@ export default function Home() {
   }
 
   async function handleEnviar() {
-    try {     
-      for (const atleta of dataEscolhido) {  
-        await addDoc(escCollectionRef, atleta);     
-        // const atletaRef = doc(escCollectionRef, atleta.id);  
+    try {
+      for (const atleta of dataEscolhido) {
+        await addDoc(escCollectionRef, atleta);
+        // const atletaRef = doc(escCollectionRef, atleta.id);
 
         // const atletaSnapshot = await getDoc(atletaRef);
         // if (!atletaSnapshot.exists()) {
         //   await addDoc(escCollectionRef, atleta);
         // }
       }
-      setAtual(!atual)
-      
+      setAtual(!atual);
+
       toast.success("Atletas adicionados com sucesso!!!");
     } catch (error) {
       console.log(error);
@@ -240,7 +234,7 @@ export default function Home() {
   // }
 
   const handleDelete = async (row) => {
-   // await handleRemover(row.id);
+    // await handleRemover(row.id);
     const newData = [...dataEscolhido];
     const rowIndex = newData.findIndex((r) => r === row);
     if (rowIndex !== -1) {
@@ -250,7 +244,6 @@ export default function Home() {
   };
 
   const handleChangePosicao = async (value) => {
-  
     const FiltradosPorRodada = firedata.filter((documento) => {
       return documento.rodada === rodada;
     });
@@ -268,15 +261,29 @@ export default function Home() {
     setFilterGrafico(jogadoresUnicosPorApelido);
   };
 
-  function handleCanal(value){
+  function handleCanal(value) {
     const FiltradosPorRodada = firedata.filter((documento) => {
       return documento.rodada === rodada;
-    }); 
+    });
     const FiltradosPorCanal = FiltradosPorRodada.filter((documento) => {
       return documento.canal === value;
-    });   
-    setDataEscolhido(FiltradosPorCanal)
+    });
+    setDataEscolhido(FiltradosPorCanal);
   }
+
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+    filtrarDados()
+  };
+  
+
+  const filtrarDados = () => {
+    const lowerCaseTerm = DeferredValue.toLowerCase();
+    const filteredData = data.atletas.filter(item =>
+      item.apelido.toLowerCase().includes(lowerCaseTerm)
+    );   
+    setFilted(filteredData);
+  };
 
   return (
     <>
@@ -295,11 +302,15 @@ export default function Home() {
             <div className={classes.container_item}>
               <div className={classes.search}>
                 <div style={{ width: "50%", margin: 5 }}>
-                  <InputSearch
-                    filtered={filted}
-                    setFiltered={setFilted}
-                    rows={data.atletas}
-                    searchFields={["apelido", "minimo_para_valorizar"]}
+                  <TextField
+                    fullWidth
+                    label="Procurar"
+                    variant="outlined"
+                    size="small"
+                    onChange={handleSearch}
+                    InputProps={{                      
+                      style: { borderRadius: "16px" },
+                    }}
                   />
                 </div>
                 <div style={{ width: "20%", margin: 5 }}>
@@ -308,7 +319,7 @@ export default function Home() {
                     label={"Canais"}
                     value={canal}
                     setValue={setCanal}
-                    onAction={(value)=> handleCanal(value)}
+                    onAction={(value) => handleCanal(value)}
                   />
                 </div>
                 <div style={{ width: "20%", margin: 5 }}>
@@ -317,7 +328,7 @@ export default function Home() {
                     label={"rodada"}
                     value={rodada}
                     setValue={setRodada}
-                    onAction={(value)=> handleRodada(value)}                    
+                    onAction={(value) => handleRodada(value)}
                   />
                 </div>
               </div>
@@ -340,7 +351,19 @@ export default function Home() {
                     (objeto) => objeto.id === item.posicao_id
                   );
                   return (
-                    <SimpleAccordion
+                    // <SimpleAccordion
+                    //   key={item.id}
+                    //   atleta={item}
+                    //   clube={filterClube}
+                    //   status={status}
+                    //   posicao={posicao}
+                    //   canal={canal}
+                    //   rodada={rodada}
+                    //   setDados={setDataEscolhido}
+                    //   dados={dataEscolhido}
+                    // />
+                    <PersonCart
+                      key={item.id}
                       atleta={item}
                       clube={filterClube}
                       status={status}
@@ -350,16 +373,6 @@ export default function Home() {
                       setDados={setDataEscolhido}
                       dados={dataEscolhido}
                     />
-                    // <PersonCart
-                    //   atleta={item}
-                    //   clube={filterClube}
-                    //   status={status}
-                    //   posicao={posicao}
-                    //   canal={canal}
-                    //   rodada={rodada}
-                    //   setDados={setFiredata}
-                    //   dados={firedata}
-                    // />
                   );
                 })}
               </div>
@@ -571,7 +584,7 @@ export default function Home() {
                   label={"Posição"}
                   value={posicaJog}
                   setValue={setPosicaoJog}
-                  onAction={(value) => handleChangePosicao(value)}                  
+                  onAction={(value) => handleChangePosicao(value)}
                 />
               </div>
               <BarChartCustom data={filterGrafico} />
