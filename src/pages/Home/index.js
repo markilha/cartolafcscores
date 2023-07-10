@@ -52,6 +52,7 @@ export default function Home() {
     { label: "Atacante", value: "ata" },
     { label: "Técnico", value: "tec" },
   ];
+ 
 
   //Puscando atletas api
   const { data, isLoading, error } = useQuery(
@@ -76,7 +77,7 @@ export default function Home() {
       setFiredata(documentos);
     }
     getFirebase();
-  }, [atual]);
+  }, []);
 
   async function handleRodada(value) {
     async function getFirebase() {
@@ -277,12 +278,18 @@ export default function Home() {
   };
   
 
-  const filtrarDados = () => {
-    const lowerCaseTerm = DeferredValue.toLowerCase();
+  const filtrarDados = (value) => {
+    const lowerCaseTerm = value.toLowerCase();
     const filteredData = data.atletas.filter(item =>
       item.apelido.toLowerCase().includes(lowerCaseTerm)
     );   
     setFilted(filteredData);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      filtrarDados(event.target.value)
+    }
   };
 
   return (
@@ -307,7 +314,8 @@ export default function Home() {
                     label="Procurar"
                     variant="outlined"
                     size="small"
-                    onChange={handleSearch}
+                    onChange={(text)=> setSearchText(text)}
+                    onKeyDown={handleKeyDown}
                     InputProps={{                      
                       style: { borderRadius: "16px" },
                     }}
@@ -350,18 +358,7 @@ export default function Home() {
                   const posicao = Object.values(data.posicoes).find(
                     (objeto) => objeto.id === item.posicao_id
                   );
-                  return (
-                    // <SimpleAccordion
-                    //   key={item.id}
-                    //   atleta={item}
-                    //   clube={filterClube}
-                    //   status={status}
-                    //   posicao={posicao}
-                    //   canal={canal}
-                    //   rodada={rodada}
-                    //   setDados={setDataEscolhido}
-                    //   dados={dataEscolhido}
-                    // />
+                  return (                 
                     <PersonCart
                       key={item.id}
                       atleta={item}
